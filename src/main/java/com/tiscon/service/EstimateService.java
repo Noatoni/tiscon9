@@ -75,7 +75,7 @@ public class EstimateService {
         int distanceInt = (int) Math.floor(distance);
 
         // 距離当たりの料金を算出する
-        int priceForDistance = distanceInt * PRICE_PER_DISTANCE;
+        double priceForDistance = distanceInt * PRICE_PER_DISTANCE;
 
         int boxes = getBoxForPackage(dto.getBox(), PackageType.BOX)
                 + getBoxForPackage(dto.getBed(), PackageType.BED)
@@ -86,13 +86,26 @@ public class EstimateService {
         int pricePerTruck = estimateDAO.getPricePerTruck(boxes);
 
         // オプションサービスの料金を算出する。
-        int priceForOptionalService = 0;
+        double priceForOptionalService = 0;
 
         if (dto.getWashingMachineInstallation()) {
             priceForOptionalService = estimateDAO.getPricePerOptionalService(OptionalServiceType.WASHING_MACHINE.getCode());
         }
-
-        return priceForDistance + pricePerTruck + priceForOptionalService;
+        //引越し時期の料金を考慮する
+        double priceForSeason = 1;
+        if (dto.getMonth().equals("3")){
+            priceForSeason = 1.5;
+        }
+        else if (dto.getMonth().equals("4")){
+            priceForSeason = 1.5;
+        }
+        else if (dto.getMonth().equals("9")){
+            priceForSeason = 1.2;
+        }
+        double priceForTotal = (priceForDistance + pricePerTruck)* priceForSeason + priceForOptionalService;
+        // 小数点以下を切り捨てる
+        int price = (int) Math.floor(priceForTotal);
+        return price;
     }
 
     /**
