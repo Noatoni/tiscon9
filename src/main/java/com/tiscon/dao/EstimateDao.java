@@ -129,10 +129,28 @@ public class EstimateDao {
      * @return 料金[円]
      */
     public int getPricePerTruck(int boxNum) {
-        String sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE MAX_BOX >= :boxNum ORDER BY PRICE LIMIT 1";
+        int TruckPrice=0;
+        int Truck2Num, Truck4Num;
+        if(boxNum%200==0){
+            Truck4Num=boxNum/200;
+            TruckPrice=Truck4Num*50000;
+        }
+        else{
+            if(boxNum%200>=1&&boxNum%200<=80){
+                Truck4Num=boxNum/200;
+                TruckPrice=Truck4Num*50000+30000;
+            }
+            if(boxNum%200>=81&&boxNum%200<=199){
+                Truck4Num=boxNum/200+1;
+                TruckPrice=Truck4Num*50000;
+            }
+        
+        }
+       /**  String sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE MAX_BOX >= :boxNum ORDER BY PRICE LIMIT 1";
 
         SqlParameterSource paramSource = new MapSqlParameterSource("boxNum", boxNum);
-        return parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class);
+        */
+        return TruckPrice;
     }
 
     /**
